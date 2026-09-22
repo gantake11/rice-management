@@ -35,7 +35,7 @@ rice-management/
     │
     ├── 01_requirements/               # 【Phase 1: 要件定義】
     │   ├── 01_overview.md             # プロジェクト概要・背景・解決する課題・目的（✅ 作成済）
-    │   ├── 02_user_and_scope.md       # ターゲットユーザー・ペルソナ・スコープ(MVP/将来)
+    │   ├── 02_user_and_scope.md       # ターゲットユーザー・ペルソナ・スコープ(MVP/将来)（✅ 作成済）
     │   ├── 03_functional_requirements.md # 機能要件一覧・優先度・各機能の詳細
     │   └── 04_non_functional_req.md   # 非機能要件（性能・セキュリティ・端末対応・運用）
     │
@@ -69,7 +69,7 @@ rice-management/
 
 | フェーズ | 格納場所 | 内容 | ステータス |
 | :--- | :--- | :--- | :--- |
-| **Phase 1: 要件定義** | [`doc/01_requirements/`](doc/01_requirements/) | 課題・ペルソナ・機能/非機能要件の定義 | **進行中 (1/4 完了)** |
+| **Phase 1: 要件定義** | [`doc/01_requirements/`](doc/01_requirements/) | 課題・ペルソナ・機能/非機能要件の定義 | **進行中 (2/4 完了)** |
 | **Phase 2: 技術スタック選定** | [`doc/02_tech_stack/`](doc/02_tech_stack/) | 言語、FW、DB、インフラ選定 | 未着手 |
 | **Phase 3: DB・画面設計** | [`doc/03_design/`](doc/03_design/) | ER図、画面遷移、ワイヤーフレーム、API仕様 | 未着手 |
 | **Phase 4: 実装手順** | [`doc/04_implementation/`](doc/04_implementation/) | 環境構築手順、WBS、実装ステップ詳細 | 未着手 |
