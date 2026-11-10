@@ -23,7 +23,7 @@ flowchart TD
 | フェーズ | ディレクトリ名 | 目的・概要 | ステータス |
 | :--- | :--- | :--- | :--- |
 | **Phase 1: 要件定義** | [`/doc/01_requirements/`](./01_requirements/) | 「誰のどんな課題を解決するか」「何を作るか」の定義 | 完了 (4/4 完了) |
-| **Phase 2: 技術スタック選定** | [`/doc/02_tech_stack/`](./02_tech_stack/) | 要件を満たす言語、フレームワーク、DB、インフラの選定 | 未着手 |
+| **Phase 2: 技術スタック選定** | [`/doc/02_tech_stack/`](./02_tech_stack/) | 要件を満たす言語、フレームワーク、DB、インフラの選定 | 完了 (5/5 完了) |
 | **Phase 3: DB・画面設計** | [`/doc/03_design/`](./03_design/) | データ構造、画面遷移、UI、API、認証の具体化 | 未着手 |
 | **Phase 4: 実装手順** | [`/doc/04_implementation/`](./04_implementation/) | 開発環境セットアップ、タスク分割(WBS)、リリースまでの手順策定 | 未着手 |
 
@@ -43,12 +43,12 @@ doc/
 │   ├── 03_functional_requirements.md  # [完了] 機能要件一覧・優先度・各機能の詳細
 │   └── 04_non_functional_req.md       # [完了] 非機能要件（性能・セキュリティ・対応端末・可用性）
 │
-├── 02_tech_stack/                     # 【Phase 2】技術スタック選定
-│   ├── 01_architecture.md             # 全体アーキテクチャ方針（モノリス/SPA+API等）
-│   ├── 02_frontend.md                 # フロントエンド選定（言語/フレームワーク/UIライブラリ）
-│   ├── 03_backend.md                  # バックエンド選定（言語/フレームワーク/ORM）
-│   ├── 04_database.md                 # データベース・ストレージ選定
-│   └── 05_infra_devops.md             # インフラ・ホスティング・CI/CD・開発ツール
+├── 02_tech_stack/                     # 【Phase 2】技術スタック選定（完了: 5/5）
+│   ├── 01_architecture.md             # [完了] 全体アーキテクチャ方針（モノリス/オールDocker/SSR+PWA等）
+│   ├── 02_frontend.md                 # [完了] フロントエンド選定（Thymeleaf/Tailwind/デジタル庁デザイン）
+│   ├── 03_backend.md                  # [完了] バックエンド選定（Java 25/Spring Boot 4.x/jOOQ）
+│   ├── 04_database.md                 # [完了] データベース選定（MySQL 8.x/Flyway/Docker永続化）
+│   └── 05_infra_devops.md             # [完了] インフラ・DevOps（オールDocker/Gradle/CI/CD）
 │
 ├── 03_design/                         # 【Phase 3】DB・画面設計
 │   ├── 01_data_model.md               # データモデル・ER図・テーブル定義・制約
@@ -127,18 +127,18 @@ doc/
 - **格納ディレクトリ**: `doc/02_tech_stack/`
 - **目的**: 要件を実現するために最も費用対効果・開発速度・拡張性のバランスが良い技術を選定する。
 
-#### 1. 全体アーキテクチャ方針
+#### 1. 全体アーキテクチャ方針 (✅ 作成完了)
 - **作成ファイル**: `doc/02_tech_stack/01_architecture.md`
 - **決めるべき論点**:
   - システム構成方針（モノリス / フロントエンド・バックエンド完全分離 / サーバーレス / フルスタックフレームワーク）
   - レンダリング方針（SSR / CSR / SSG / ISR）
   - フロント・バックエンド間の通信プロトコル（REST API / GraphQL / RPC等）
 - **タスクリスト**:
-  - [ ] 全体システム構成図の作成
-  - [ ] レンダリングおよび通信方針の決定
-  - [ ] プロジェクトのディレクトリ構成標準の定義
+  - [x] 全体システム構成図の作成（Spring Boot + Thymeleaf モノリスSSR、オールDocker構成）
+  - [x] レンダリングおよび通信方針の決定（PRGパターン、将来PWA化の段階的ロードマップ）
+  - [x] プロジェクトのディレクトリ構成標準の定義
 
-#### 2. フロントエンド選定
+#### 2. フロントエンド選定 (✅ 作成完了)
 - **作成ファイル**: `doc/02_tech_stack/02_frontend.md`
 - **決めるべき論点**:
   - 言語（TypeScript / JavaScript）
@@ -147,12 +147,12 @@ doc/
   - フォーム管理・バリデーションライブラリ（React Hook Form + Zod等）
   - 状態管理ライブラリ（Zustand / Redux / TanStack Query等）
 - **タスクリスト**:
-  - [ ] フロントエンド言語・フレームワークの選定と理由の記録
-  - [ ] UIライブラリおよびスタイリング手法の決定
-  - [ ] フォーム管理・バリデーション手法の決定
-  - [ ] クライアント状態・サーバーキャッシュ管理手法の選定
+  - [x] フロントエンド言語・フレームワークの選定と理由の記録（Thymeleaf 3.x）
+  - [x] UIライブラリおよびスタイリング手法の決定（Tailwind CSS + デジタル庁デザインシステム準拠）
+  - [x] フォーム管理・バリデーション手法の決定（PRG + Jakarta Validation + Vanilla JSステッパー）
+  - [x] クライアント状態・PWA化方針の選定（Web App Manifest + Service Worker）
 
-#### 3. バックエンド選定
+#### 3. バックエンド選定 (✅ 作成完了)
 - **作成ファイル**: `doc/02_tech_stack/03_backend.md`
 - **決めるべき論点**:
   - 言語（TypeScript, Go, Python等）
@@ -160,11 +160,11 @@ doc/
   - ORM / クエリビルダー（Prisma, Drizzle, SQLAlchemy等）
   - ロギング・エラー監視方針
 - **タスクリスト**:
-  - [ ] バックエンド実行環境・フレームワークの決定
-  - [ ] ORM / データアクセスライブラリの選定
-  - [ ] API設計規約（REST原則・エラーレスポンス共通化）の策定
+  - [x] バックエンド実行環境・フレームワークの決定（Java 25 + Spring Boot 4.x）
+  - [x] ORM / データアクセスライブラリの選定（jOOQによる完全型安全SQL）
+  - [x] トランザクション・認証アクセス制御方針の策定（@Transactional、URLパラメータ簡易認証）
 
-#### 4. データベース・ストレージ選定
+#### 4. データベース・ストレージ選定 (✅ 作成完了)
 - **作成ファイル**: `doc/02_tech_stack/04_database.md`
 - **決めるべき論点**:
   - データベース種別（RDBMS: PostgreSQL, MySQL, SQLite / NoSQL: MongoDB, Firestore）
@@ -172,12 +172,12 @@ doc/
   - ファイルストレージ（S3, Cloudflare R2, Supabase Storage等 ※画像・ファイル保存がある場合）
   - キャッシュ層（Redis等）の要否
 - **タスクリスト**:
-  - [ ] 主力データベースの選定と選定理由の記載
-  - [ ] DBホスティングサービスの決定
-  - [ ] ファイルストレージ要否の判断と選定
-  - [ ] マイグレーションツールの確定
+  - [x] 主力データベースの選定と選定理由の記載（MySQL 8.x、utf8mb4）
+  - [x] DBホスティング・実行環境の決定（Docker Compose + Named Volume 永続化）
+  - [x] マイグレーションツールの確定（FlywayとjOOQコード生成の連携）
+  - [x] バックアップ・リカバリ方針の策定（mysqldump定期バックアップ）
 
-#### 5. インフラ・ホスティング・CI/CD・開発ツール
+#### 5. インフラ・ホスティング・CI/CD・開発ツール (✅ 作成完了)
 - **作成ファイル**: `doc/02_tech_stack/05_infra_devops.md`
 - **決めるべき論点**:
   - ホスティング環境（Vercel, Cloudflare Pages/Workers, Render, AWS, GCP等）
@@ -185,10 +185,10 @@ doc/
   - 開発環境（Docker利用の有無、ローカル実行環境）
   - リンター・コードフォーマッタ（ESLint, Prettier, Biome等）
 - **タスクリスト**:
-  - [ ] ホスティング環境・デプロイ方式の決定
-  - [ ] ドメイン・SSL運用の決定
-  - [ ] CI/CDワークフロー（Lint・Test・Deploy）の設計
-  - [ ] コード品質ツール（Linter/Formatter/Git hooks）の選定
+  - [x] 実行環境・デプロイ方式の決定（オールDocker構成、マルチステージビルドDockerfile）
+  - [x] ビルドツールの決定（Gradle / Gradle Wrapper）
+  - [x] CI/CDワークフロー（GitHub Actionsによるテスト・Dockerビルド検証）の設計
+  - [x] コード品質ツール（Spotless Gradle Plugin）の選定
 
 ---
 
