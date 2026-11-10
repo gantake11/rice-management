@@ -77,36 +77,56 @@ public class TransactionService {
 
 ---
 
-## 4. 認証・アクセス制御設計 (URLパラメータ簡易認証)
+## 4. 認証・アクセス制御設計 (HMAC署名付きURL & 端末Cookie認証)
 
-### 4.1 URLパラメータによるダイレクト認証フロー
-シニア層（祖母）にとってパスワード入力は最大の利用障壁となるため、URLに付与されたトークン（パラメータ）をインターセプターで検証し、自動ログイン状態を確立します。
+### 4.1 端末アクティベーション & Cookie認証フロー
+シニア層（祖母）にとってパスワード入力は最大の利用障壁となるため、管理画面から発行した専用URL（ランダムトークン ＋ 環境変数秘密キーによるHMAC署名）への初回アクセスにより端末を有効化し、以降は長期セッションCookieで自動ログイン状態を確立します。  
+1つのURLは1端末のみアクティベーション可能（ワンタイム招待）とし、URL再発行時は古い未使用URLを即座に無効化します。
 
 ```mermaid
 sequenceDiagram
     autonumber
     actor User as 祖母 / 家族
     participant Browser as スマホブラウザ
-    participant Interceptor as AuthInterceptor
-    participant Session as HTTP Session / Cookie
+    participant Interceptor as AuthInterceptor / Filter
+    participant Service as AuthService
     participant Controller as DashboardController
 
-    User->>Browser: パラメータ付きURLにアクセス<br>(https://...?key=SECRET_TOKEN&user=grandma)
-    Browser->>Interceptor: GET リクエスト
-    Interceptor->>Interceptor: ?key と ?user の検証
-    alt パラメータ有効
-        Interceptor->>Session: 認証済みユーザー情報（MemberId）をSession/Cookieに保存<br>(有効期間: 30日〜無期限)
-        Interceptor->>Controller: 次の処理へ通過
-        Controller-->>Browser: トップ画面（ダッシュボード）表示
-    else パラメータなし & 既存セッションあり
-        Interceptor->>Controller: セッション情報から自動ログイン通過
-        Controller-->>Browser: トップ画面表示
-    else パラメータなし & セッションなし
-        Interceptor-->>Browser: 簡易合言葉入力画面、または専用URL案内画面を表示
+    alt 1. 初回アクティベーション (専用URLからアクセス)
+        User->>Browser: パラメータ付きURLにアクセス<br>(/auth/activate?token=RANDOM_TOKEN&sign=HMAC_SIGN)
+        Browser->>Interceptor: GET リクエスト
+        Interceptor->>Service: トークン & HMAC署名の検証要求
+        Note over Service: 1. 環境変数の秘密キーでHMAC署名を検証<br/>2. トークンが有効かつ未使用かを検証
+        alt 検証成功 (未使用 & 署名一致)
+            Service->>Service: トークンを使用済みに更新 (1端末限定)
+            Service-->>Interceptor: 認証OK (端末セッションCookie発行)
+            Interceptor-->>Browser: Set-Cookie (長期有効) & トップ画面へリダイレクト
+            Browser-->>User: ダッシュボード画面表示
+        else 検証失敗 (無効・再発行済み・使用済み)
+            Interceptor-->>Browser: アクセス拒否 / 無効なURL案内画面を表示
+        end
+
+    else 2. 次回以降のアクセス (通常アクセス)
+        User->>Browser: トップ画面にアクセス (パラメータなし)
+        Browser->>Interceptor: GET / (Cookie送信)
+        Interceptor->>Service: Cookieセッションの検証
+        alt セッション有効
+            Interceptor->>Controller: コントローラーへ通過
+            Controller-->>Browser: ダッシュボード画面表示
+        else セッション無効 / Cookieなし
+            Interceptor-->>Browser: 専用URL案内画面を表示
+        end
     end
 ```
 
 ### 4.2 実装方針
-* `HandlerInterceptor` を実装し、リクエストパラメータ `key` および `user` を捕捉。
-* 検証成功時、`HttpSession` または 暗号化されたセッションCookieに `member_id` をセット。
-* セッションの有効期限は `application.yml` で長期（最低30日以上）に設定し、頻繁な再認証を防止。
+* **URLパラメータ**:
+  - `token`: ランダム生成された一意の文字列。
+  - `sign`: サーバー環境変数の秘密キーを鍵として `token` をハッシュ計算したHMAC-SHA256署名。秘密キーをURLに露出させずに改ざんを防止。
+* **端末制限（ワンタイム招待）**:
+  - 1つのURLから登録できる端末は1台に制限。初回アクセス成功時にトークンを使用済みに更新し、以降の同じURLからの再アクティベーションを拒否。
+* **管理画面からの発行・再発行**:
+  - 管理画面から端末用URLを生成。再発行時は対象の旧URLトークンを即座に無効化し、古いURLからの新規登録を遮断。
+* **セッション管理**:
+  - アクティベーション成功時に、暗号論的乱数による端末セッショントークンをCookie（`HttpOnly`, `SameSite=Lax`, `Secure`）として発行。
+  - 有効期限は長期（最低30日〜1年等）に設定し、祖母が日常的に再ログインを求められないようにする。
